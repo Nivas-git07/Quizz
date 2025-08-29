@@ -18,15 +18,39 @@ export default function Registration() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form Submitted:", formData);
 
-    // Add actual registration logic here (API call)
+    try {
+      const res = await fetch("http://localhost:5000/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: formData.name, // backend expects username
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
-    // Navigate to login page after successful registration
-    navigate("/login");
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(" Registration successful!");
+        
+        setTimeout(() => navigate("/login"), 1000);
+      } else {
+        alert("❌ " + data.error);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert(" Something went wrong. Try again.");
+    }
   };
+
 
   return (
     <div style={styles.page}>
