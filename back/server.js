@@ -1,14 +1,3 @@
-// require("dotenv").config();// adjust path as needed
-// const express = require('express');
-// const { Pool } = require('pg');
-// const multer = require('multer');
-// const cors = require('cors');
-// const path = require('path');
-// const app = express();
-// const PORT = 5000;
-// const bcrypt = require("bcryptjs");
-// const session = require("express-session");
-// const PgSession = require("connect-pg-simple")(session);
 
 
 
@@ -21,56 +10,33 @@ import path from "path";
 import bcrypt from "bcryptjs";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
+import jwt from "jsonwebtoken";
+
+
 
 dotenv.config();
-
 const { Pool } = pkg;
 const app = express();
 const PORT = 5000;
 
-
-
-const requiredEnv = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'];
-requiredEnv.forEach((key) => {
-  if (!process.env[key]) {
-    console.error(`Missing environment variable: ${key}`);
-    process.exit(1);
-  }
-});
 const pool = new Pool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
 });
-pool.connect()
-  .then(() => console.log('Connected to PostgreSQL'))
-  .catch((err) => {
-    console.error('Database connection error:', err.message);
-    process.exit(1);
-  });
-const PgSession = connectPgSimple(session);
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true
-}));
+
+pool.connect().then(() => console.log("Connected to PostgreSQL"));
+
+// Middleware
 app.use(express.json());
-app.use(session({
-  store: new PgSession({
-    pool: pool,
-    tableName: "user_sessions",
-  }),
-  secret: "supersecret",
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    maxAge: 1000 * 60 * 60 * 24 * 30,
-    httpOnly: true,
-    secure: false,
-  },
+app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+  origin: "http://localhost:3001", 
+  credentials: true                
 }));
 
-app.use(express.urlencoded({ extended: true }));
+const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 
 app.post("/signup", async (req, res) => {
   const { username, email, password } = req.body;
@@ -97,6 +63,7 @@ app.post("/signup", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -114,57 +81,52 @@ app.post("/login", async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ error: "Invalid email or password" });
     }
-    req.session.user = {
-      id: user.user_id, // make sure your table column is user_id
-      username: user.username,
-      email: user.email,
-    };
-    console.log("Session after login:", req.session);
-    console.log("User logged in:", user.username);
-    console.log("User ID:", user.user_id);
-    res.json({
-      message: "Login successful",
-      user: {
-        id: user.user_id,
-        username: user.username,
-        email: user.email,
-      },
-    });
+    const token = jwt.sign(
+      { id: user.user_id, username: user.username, email: user.email },
+      JWT_SECRET,
+      { expiresIn: "2h" } // token valid for 1 hour
+    );
+
+    res.json({ message: "Login successful", token });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
-app.post("/api/update-score", async (req, res) => {
+
+function authMiddleware(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  if (!authHeader) return res.status(401).json({ error: "No token provided" });
+
+  const token = authHeader.split(" ")[1]; 
   try {
-    const userId = req.session.user?.id;
-    if (!userId) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    const { tech, score } = req.body;
-
-    const techMap = {
-      HTML: "html_score",
-      CSS: "css_score",
-      JavaScript: "js_score",
-      React: "react_score",
-      FLUTTER: "flutter_score",
-    };
-
-    const column = techMap[tech];
-    if (!column) return res.status(400).json({ error: "Invalid tech" });
-
-    const query = `UPDATE signup SET ${column}=$1 WHERE id=$2 RETURNING id, username, ${column};`;
-    const result = await pool.query(query, [score, userId]);
-
-    res.json({ message: `${tech} score updated!`, user: result.rows[0] });
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded; 
+    next();
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    return res.status(401).json({ error: "Invalid token" });
   }
+}
+
+
+app.post("/api/update-score", authMiddleware, async (req, res) => {
+  const userId = req.user.id;
+  const { tech, score } = req.body;
+
+  const techMap = {
+    HTML: "html_score",
+    CSS: "css_score",
+    JavaScript: "js_score",
+    React: "react_score",
+    FLUTTER: "flutter_score",
+  };
+  const column = techMap[tech];
+  if (!column) return res.status(400).json({ error: "Invalid tech" });
+
+  const query = `UPDATE signup SET ${column}=$1 WHERE user_id=$2 RETURNING user_id, username, ${column}`;
+  const result = await pool.query(query, [score, userId]);
+
+  res.json({ message: `${tech} score updated!`, user: result.rows[0] });
 });
 
-
-app.listen(5000, () => console.log("Server running on http://localhost:5000"));
-
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

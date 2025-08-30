@@ -18,27 +18,28 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
 
+     let token = null;
     try {
       const res = await fetch("http://localhost:5000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
       const data = await res.json();
-
+      token = data.token; 
+      localStorage.setItem("token", token); 
       if (!res.ok) {
         alert(data.error || "Login failed");
         return;
       }
+      console.log("JWT token:", token);
 
       console.log(" Login successful:", data);
 
-      
 
-      
+
+
       navigate("/technology");
     } catch (err) {
       console.error("Login error:", err);

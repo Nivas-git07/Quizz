@@ -1625,30 +1625,25 @@ export default function Quiz() {
       setRound((r) => r + 1);
       setQIndex(0);
     } else {
-      // navigate(
-      //   `/technology/${encodeURIComponent(decoded)}/result/${
-      //     score + (correct ? 1 : 0)
-      //   }`
-      // );
+     
       const finalScore = score + (correct ? 1 : 0);
+      let token = localStorage.getItem("token"); // get JWT from localStorage
 
-      // ✅ Send score to backend
+      
       try {
+        
         const res = await fetch("http://localhost:5000/api/update-score", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`, // send JWT
           },
-          credentials: "include", // same as axios { withCredentials: true }
-          body: JSON.stringify({
-            tech: decoded,   // which quiz (HTML, CSS, etc.)
-            score: finalScore,
-          }),
+          body: JSON.stringify({ tech: decoded, score: finalScore })
         });
-
         const data = await res.json();
         console.log("Score updated:", data);
         console.log("Final Score:", finalScore);
+        console.log("tech:", decoded);
 
         // ✅ Navigate only after saving score
         navigate(`/technology/${encodeURIComponent(decoded)}/result/${finalScore}`);
