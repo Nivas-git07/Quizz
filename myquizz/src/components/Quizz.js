@@ -1613,7 +1613,7 @@ export default function Quiz() {
     }
   }, [round]);
 
-  const handleSelect = (opt) => {
+  const handleSelect = async (opt) => {
     const correct = opt === currQ.answer;
     if (correct) setScore((s) => s + 1);
 
@@ -1625,13 +1625,40 @@ export default function Quiz() {
       setRound((r) => r + 1);
       setQIndex(0);
     } else {
-      navigate(
-        `/technology/${encodeURIComponent(decoded)}/result/${
-          score + (correct ? 1 : 0)
-        }`
-      );
+      // navigate(
+      //   `/technology/${encodeURIComponent(decoded)}/result/${
+      //     score + (correct ? 1 : 0)
+      //   }`
+      // );
+      const finalScore = score + (correct ? 1 : 0);
+
+      // ✅ Send score to backend
+      try {
+        const res = await fetch("http://localhost:5000/api/update-score", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // same as axios { withCredentials: true }
+          body: JSON.stringify({
+            tech: decoded,   // which quiz (HTML, CSS, etc.)
+            score: finalScore,
+          }),
+        });
+
+        const data = await res.json();
+        console.log("Score updated:", data);
+        console.log("Final Score:", finalScore);
+
+        // ✅ Navigate only after saving score
+        navigate(`/technology/${encodeURIComponent(decoded)}/result/${finalScore}`);
+      }
+
+      catch (error) {
+        console.error("Error updating score:", error);
+      };
     }
-  };
+  }
 
   if (!currQ) {
     return (
@@ -1666,10 +1693,9 @@ export default function Quiz() {
             <div
               style={{
                 ...styles.progressSlider,
-                width: `${
-                  ((round + (qIndex + 1) / questions.length) / rounds.length) *
+                width: `${((round + (qIndex + 1) / questions.length) / rounds.length) *
                   100
-                }%`,
+                  }%`,
               }}
             />
             <div style={styles.roundLabels}>
@@ -1828,3 +1854,4 @@ const styles = {
     fontStyle: "italic",
   },
 };
+

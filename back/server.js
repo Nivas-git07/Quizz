@@ -114,16 +114,57 @@ app.post("/login", async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ error: "Invalid email or password" });
     }
-    req.session.userId = user.user_id;
-    req.session.username = user.username;
+    req.session.user = {
+      id: user.user_id, // make sure your table column is user_id
+      username: user.username,
+      email: user.email,
+    };
     console.log("Session after login:", req.session);
     console.log("User logged in:", user.username);
-    res.json({ message: "Login successful", user: { id: user.id, username: user.username, email: user.email } });
+    console.log("User ID:", user.user_id);
+    res.json({
+      message: "Login successful",
+      user: {
+        id: user.user_id,
+        username: user.username,
+        email: user.email,
+      },
+    });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
+app.post("/api/update-score", async (req, res) => {
+  try {
+    const userId = req.session.user?.id;
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { tech, score } = req.body;
+
+    const techMap = {
+      HTML: "html_score",
+      CSS: "css_score",
+      JavaScript: "js_score",
+      React: "react_score",
+      FLUTTER: "flutter_score",
+    };
+
+    const column = techMap[tech];
+    if (!column) return res.status(400).json({ error: "Invalid tech" });
+
+    const query = `UPDATE signup SET ${column}=$1 WHERE id=$2 RETURNING id, username, ${column};`;
+    const result = await pool.query(query, [score, userId]);
+
+    res.json({ message: `${tech} score updated!`, user: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 
 app.listen(5000, () => console.log("Server running on http://localhost:5000"));
 
