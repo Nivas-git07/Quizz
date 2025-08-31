@@ -136,7 +136,7 @@ app.post("/api/certificates", authMiddleware, async (req, res) => {
     const { studentName, rollNo, technology, score, date, sharedVia } =
       req.body;
 
-     const result = await pool.query(
+    const result = await pool.query(
       "INSERT INTO certificate (user_id, student, rollno , technology, score, date,sharedvia) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
       [userId, studentName, rollNo, technology, score, date, sharedVia]
     );
@@ -150,5 +150,23 @@ app.post("/api/certificates", authMiddleware, async (req, res) => {
   }
 }
 );
+app.get("/api/getdetails", authMiddleware, async (req, res) => {
+  try {
+    const result = await pool.query("SELECT student, rollno, technology, score, date, sharedvia FROM certificate");
+    const mapped = result.rows.map(r => ({
+      studentName: r.student,
+      rollNo: r.rollno,
+      technology: r.technology,
+      score: r.score,
+      date: r.date,
+      sharedVia: r.sharedvia ? r.sharedvia.split(",") : [] // if stored as CSV
+    }));
+
+    res.json(mapped);
+  } catch (err) {
+    console.error("Fetch details error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+})
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

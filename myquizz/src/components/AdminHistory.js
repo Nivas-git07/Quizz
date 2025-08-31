@@ -7,15 +7,32 @@ export default function AdminHistory() {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
 
-  const load = async (page = 1) => {
-    const res = await fetch(
-      `${API_BASE}/api/certificates?search=${encodeURIComponent(
-        search
-      )}&page=${page}&limit=20`
-    );
+  
+const load = async () => {
+  let token = localStorage.getItem("token");
+  try {
+    const res = await fetch(`${API_BASE}/api/getdetails`, {
+      method: "GET", 
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
     const json = await res.json();
-    setData(json.items || []);
-  };
+
+    // Ensure it's an array, otherwise fallback empty
+    if (Array.isArray(json)) {
+      setData(json);
+    } else {
+      console.error("Unexpected API response:", json);
+      setData([]);
+    }
+  } catch (err) {
+    console.error("Fetch error:", err);
+    setData([]);
+  }
+};
 
   useEffect(() => {
     load();
