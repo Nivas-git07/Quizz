@@ -56,7 +56,7 @@ export default function QuizResult() {
       high: "https://www.youtube.com/watch?v=VCRIO0r64Xg",
     },
   };
-  const API_BASE = "http://localhost:5000"; // update to your server origin in prod
+  const API_BASE = "https://quiz.selfmade.express/api"; // update to your server origin in prod
 
   const saveCertificateToAdmin = async (sharedVia = []) => {
     const certificateData = {
@@ -186,7 +186,7 @@ export default function QuizResult() {
         sharedVia: [],
       };
       try {
-        const res = await fetch(`${API_BASE}/api/certificates`, {
+        const res = await fetch(`${API_BASE}/certificates`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -195,15 +195,12 @@ export default function QuizResult() {
           body: JSON.stringify(certificateData),
 
         });
-        console.log("Saving certificate:", certificateData, "Token:", token);
 
 
         if (!res.ok) throw new Error("Failed to save certificate");
 
         const saved = await res.json();
-        console.log("Saved certificate:", saved);
       } catch (err) {
-        console.error(err);
         alert("Failed to save certificate to admin history.");
       }
     

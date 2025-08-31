@@ -1,7 +1,7 @@
 // somewhere in AdminHistory.jsx
 import { useEffect, useState } from "react";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = "https://quiz.selfmade.express";
 
 export default function AdminHistory() {
   const [data, setData] = useState([]);
@@ -25,11 +25,9 @@ const load = async () => {
     if (Array.isArray(json)) {
       setData(json);
     } else {
-      console.error("Unexpected API response:", json);
       setData([]);
     }
   } catch (err) {
-    console.error("Fetch error:", err);
     setData([]);
   }
 };

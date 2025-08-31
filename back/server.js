@@ -31,9 +31,17 @@ pool.connect().then(() => console.log("Connected to PostgreSQL"));
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const allowedOrigins = [
+  "http://localhost:3000",  // React dev server
+  "https://quiz.selfmade.express"   // Production domain
+];
+
 app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
@@ -109,7 +117,7 @@ function authMiddleware(req, res, next) {
 }
 
 
-app.post("/api/update-score", authMiddleware, async (req, res) => {
+app.post("/update-score", authMiddleware, async (req, res) => {
   const userId = req.user.id;
   const { tech, score } = req.body;
 
@@ -130,7 +138,7 @@ app.post("/api/update-score", authMiddleware, async (req, res) => {
   res.json({ message: `${tech} score updated!`, user: result.rows[0] });
 });
 
-app.post("/api/certificates", authMiddleware, async (req, res) => {
+app.post("/certificates", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
     const { studentName, rollNo, technology, score, date, sharedVia } =
@@ -150,7 +158,7 @@ app.post("/api/certificates", authMiddleware, async (req, res) => {
   }
 }
 );
-app.get("/api/getdetails", authMiddleware, async (req, res) => {
+app.get("/getdetails", authMiddleware, async (req, res) => {
   try {
     const result = await pool.query("SELECT student, rollno, technology, score, date, sharedvia FROM certificate");
     const mapped = result.rows.map(r => ({

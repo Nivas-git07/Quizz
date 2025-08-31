@@ -1632,7 +1632,7 @@ export default function Quiz() {
       
       try {
         
-        const res = await fetch("http://localhost:5000/api/update-score", {
+        const res = await fetch("https://quiz.selfmade.express/api/update-score", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -1641,16 +1641,12 @@ export default function Quiz() {
           body: JSON.stringify({ tech: decoded, score: finalScore })
         });
         const data = await res.json();
-        console.log("Score updated:", data);
-        console.log("Final Score:", finalScore);
-        console.log("tech:", decoded);
 
       
         navigate(`/technology/${encodeURIComponent(decoded)}/result/${finalScore}`);
       }
 
       catch (error) {
-        console.error("Error updating score:", error);
       };
     }
   }

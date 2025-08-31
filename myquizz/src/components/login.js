@@ -21,7 +21,7 @@ export default function Login() {
 
      let token = null;
     try {
-      const res = await fetch("http://localhost:5000/login", {
+      const res = await fetch("https://quiz.selfmade.express/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -33,17 +33,12 @@ export default function Login() {
         alert(data.error || "Login failed");
         return;
       }
-      console.log("JWT token:", token);
-
-      console.log(" Login successful:", data);
 
 
 
 
       navigate("/technology");
     } catch (err) {
-      console.error("Login error:", err);
-      console.log("Something went wrong. Please try again.");
     }
   };
 

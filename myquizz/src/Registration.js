@@ -21,10 +21,8 @@ export default function Registration() {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Submitted:", formData);
-
     try {
-      const res = await fetch("http://localhost:5000/signup", {
+      const res = await fetch("https://quiz.selfmade.express/api/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -46,7 +44,6 @@ export default function Registration() {
         alert("❌ " + data.error);
       }
     } catch (error) {
-      console.error("Error:", error);
       alert(" Something went wrong. Try again.");
     }
   };
