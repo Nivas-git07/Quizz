@@ -1750,7 +1750,9 @@ export default function Quiz() {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #0a0a0a, #1a1a1a)",
+    backgroundImage: "url('https://wallpaperaccess.com/full/1426929.jpg')", // Solid background (removed animation)
+    backgroundSize: "cover",
+    backgroundPosition: "center",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -1844,5 +1846,5 @@ const styles = {
     marginTop: "12px",
     fontStyle: "italic",
   },
-};
+}
 

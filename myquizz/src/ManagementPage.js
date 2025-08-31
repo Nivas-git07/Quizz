@@ -13,7 +13,7 @@ export default function ManagementPage() {
   };
 
   const pageStyle = {
-    backgroundImage: "url('https://example.com/your-background.jpg')",
+    backgroundImage: "url('https://img.freepik.com/premium-photo/educational-concept-books-blue_387680-275.jpg')",
     backgroundSize: "cover",
     backgroundPosition: "center",
     height: "100vh",

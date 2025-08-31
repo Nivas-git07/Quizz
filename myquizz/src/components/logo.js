@@ -8,7 +8,7 @@ export default function Logo() {
       alignItems: 'center',
       gap: '0.5rem',
     }}>
-      🤔 QuizMaster
+      🤔 BRAIN BLOOM
     </div>
   );
 }

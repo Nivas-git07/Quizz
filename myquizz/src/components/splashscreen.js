@@ -50,7 +50,7 @@ export default function SplashScreen() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.8, duration: 1 }}
       >
-        My App
+        GAIN KNOWLEDGE
       </motion.h1>
 
       {/* Tagline with Floating Effect */}

@@ -103,7 +103,9 @@ export default function TechnologyDetails() {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "linear-gradient(135deg, #121212, #1E1E1E)",
+    backgroundImage: "url('https://tse3.mm.bing.net/th/id/OIP.MFpQCIyq-Wt39zGSf1spJQHaEK?pid=Api&P=0&h=180')", // Solid background (removed animation)
+    backgroundSize: "cover",
+    backgroundPosition: "center",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -168,3 +170,4 @@ const styles = {
     color: "#FFD700",
   },
 };
+

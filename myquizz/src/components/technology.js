@@ -123,9 +123,11 @@ export default function Technology() {
 }
 
 const styles = {
-  page: {
+ page: {
     minHeight: "100vh",
-    background: "linear-gradient(to right, #111111)", // Dark Black to Dark Yellow
+    backgroundImage: "url('https://img.freepik.com/free-vector/wave-background-abstract-gradient-design_483537-3688.jpg')", // Solid background (removed animation)
+    backgroundSize: "cover",
+    backgroundPosition: "center",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",

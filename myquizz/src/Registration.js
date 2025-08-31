@@ -121,10 +121,14 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    background: "#0d0d0d", // Solid background (removed animation)
+    backgroundImage: "url('https://media.istockphoto.com/id/2197300065/photo/abstract-white-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=njbnHMPd8i2u3wil2MBq65kzL9s_LUf1V4TGq6lYWUQ=')", // Solid background (removed animation)
+    backgroundSize: "cover",
+    backgroundPosition: "center",
   },
   card: {
-    backgroundColor: "#1a1a1a",
+    backgroundImage: "url('https://wallpapercave.com/wp/wp3416333.jpg')", // Solid background (removed animation)
+    backgroundSize: "cover",
+    backgroundPosition: "center",
     padding: "40px",
     borderRadius: "14px",
     boxShadow: "0 0 15px rgba(255, 215, 0, 0.3)", // Softer glow effect
