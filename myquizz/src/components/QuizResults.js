@@ -59,33 +59,17 @@ export default function QuizResult() {
   const API_BASE = "http://localhost:5000"; // update to your server origin in prod
 
   const saveCertificateToAdmin = async (sharedVia = []) => {
-    const token = localStorage.getItem("token"); 
     const certificateData = {
       studentName,
       rollNo,
       technology: decoded,
       score: numericScore,
       date: currentDate,
-      sharedVia, // e.g. ["whatsapp"] or ["email"] or []
+      sharedVia,
     };
+  }
 
-    try {
-      const res = await fetch(`${API_BASE}/api/certificates`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(certificateData),
-        Authorization: `Bearer ${token}`,
-      });
 
-      if (!res.ok) throw new Error("Failed to save certificate");
-
-      const saved = await res.json();
-      console.log("Saved certificate:", saved);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to save certificate to admin history.");
-    }
-  };
   const getYouTubeLink = () => {
     const links = youtubeLinks[decoded];
     if (!links) return null;
@@ -188,233 +172,264 @@ export default function QuizResult() {
     window.location.href = mailto;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async() => {
     if (studentName.trim() && rollNo.trim()) {
       setShowForm(false);
       setShowPreview(true);
-    } else {
-      alert("Please enter your name and roll number first.");
-    }
+      const token = localStorage.getItem("token");
+      const certificateData = {
+        studentName,
+        rollNo,
+        technology: decoded,
+        score: numericScore,
+        date: currentDate,
+        sharedVia: [],
+      };
+      try {
+        const res = await fetch(`${API_BASE}/api/certificates`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(certificateData),
+
+        });
+        console.log("Saving certificate:", certificateData, "Token:", token);
+
+
+        if (!res.ok) throw new Error("Failed to save certificate");
+
+        const saved = await res.json();
+        console.log("Saved certificate:", saved);
+      } catch (err) {
+        console.error(err);
+        alert("Failed to save certificate to admin history.");
+      }
+    
+  } else {
+    alert("Please enter your name and roll number first.");
+}
   };
 
-  const handleApply = () => {
-    setShowPreview(false);
-    setShowCertificate(true);
-  };
+const handleApply = () => {
+  setShowPreview(false);
+  setShowCertificate(true);
+};
 
-  return (
-    <div className="result-container">
+return (
+  <div className="result-container">
+    <motion.div
+      className="result-layout"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8 }}
+    >
+      {/* LEFT SIDE - QUIZ RESULT */}
       <motion.div
-        className="result-layout"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
+        className="left-panel"
+        initial={{ x: -50 }}
+        animate={{ x: 0 }}
+        transition={{ type: "spring", stiffness: 100 }}
       >
-        {/* LEFT SIDE - QUIZ RESULT */}
-        <motion.div
-          className="left-panel"
-          initial={{ x: -50 }}
-          animate={{ x: 0 }}
-          transition={{ type: "spring", stiffness: 100 }}
-        >
-          <div className={`result-card glass-effect animate-${animateLevel}`}>
-            <img
-              src={quizCompleteImg}
-              alt="Quiz Complete"
-              className="result-image"
-            />
-            <h1 className="result-title">{decoded} Quiz Complete!</h1>
-            <p className={`animated-score glow-${animateLevel}`}>
-              Your final score: {score} / 40
-            </p>
-            <p className="feedback-text">{getFeedbackMessage()}</p>
+        <div className={`result-card glass-effect animate-${animateLevel}`}>
+          <img
+            src={quizCompleteImg}
+            alt="Quiz Complete"
+            className="result-image"
+          />
+          <h1 className="result-title">{decoded} Quiz Complete!</h1>
+          <p className={`animated-score glow-${animateLevel}`}>
+            Your final score: {score} / 40
+          </p>
+          <p className="feedback-text">{getFeedbackMessage()}</p>
 
-            {numericScore > 2 && (
-              <>
-                {showForm && (
-                  <div className="cert-inputs">
-                    <input
-                      type="text"
-                      placeholder="Enter Your Name"
-                      value={studentName}
-                      onChange={(e) => setStudentName(e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Enter Roll Number"
-                      value={rollNo}
-                      onChange={(e) => setRollNo(e.target.value)}
-                    />
-                    <button className="btn submit-btn" onClick={handleSubmit}>
-                      ✅ Submit
-                    </button>
-                  </div>
-                )}
+          {numericScore > 2 && (
+            <>
+              {showForm && (
+                <div className="cert-inputs">
+                  <input
+                    type="text"
+                    placeholder="Enter Your Name"
+                    value={studentName}
+                    onChange={(e) => setStudentName(e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Enter Roll Number"
+                    value={rollNo}
+                    onChange={(e) => setRollNo(e.target.value)}
+                  />
+                  <button className="btn submit-btn" onClick={handleSubmit}>
+                    ✅ Submit
+                  </button>
+                </div>
+              )}
 
-                {showPreview && (
-                  <motion.div
-                    className="preview-box"
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                  >
-                    <p>
-                      <strong>Name:</strong> {studentName}
-                    </p>
-                    <p>
-                      <strong>Roll No:</strong> {rollNo}
-                    </p>
-                    <p>
-                      <strong>Score:</strong> {score} / 40
-                    </p>
-                    <p className="preview-note">
-                      ✅ Eligible for a Professional Certificate
-                    </p>
-                    <button className="apply-btn" onClick={handleApply}>
-                      🎓 Apply for Certificate
-                    </button>
-                  </motion.div>
-                )}
-              </>
-            )}
-
-            <div className="btn-group">
-              <button
-                onClick={() => navigate(`/technology/${decoded}`)}
-                className="btn retake animated-btn"
-              >
-                🔁 Retake Quiz
-              </button>
-              <button
-                onClick={() => navigate("/technology ")}
-                className="btn back animated-btn"
-              >
-                🧠 Back to Technologies
-              </button>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* RIGHT SIDE - YOUTUBE VIDEO */}
-        <motion.div
-          className="right-panel"
-          initial={{ x: 50 }}
-          animate={{ x: 0 }}
-          transition={{ type: "spring", stiffness: 100 }}
-        >
-          {suggestion && videoId && (
-            <div className="video-card glass-effect">
-              <h3 className="video-title">
-                🔗 Recommended {suggestion.level} Video
-              </h3>
-              <iframe
-                src={`https://www.youtube.com/embed/${videoId}`}
-                title="YouTube Video"
-                frameBorder="0"
-                allowFullScreen
-                className="youtube-frame"
-              />
-              <a
-                href={suggestion.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="youtube-link"
-              >
-                📺 Watch on YouTube
-              </a>
-            </div>
+              {showPreview && (
+                <motion.div
+                  className="preview-box"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                >
+                  <p>
+                    <strong>Name:</strong> {studentName}
+                  </p>
+                  <p>
+                    <strong>Roll No:</strong> {rollNo}
+                  </p>
+                  <p>
+                    <strong>Score:</strong> {score} / 40
+                  </p>
+                  <p className="preview-note">
+                    ✅ Eligible for a Professional Certificate
+                  </p>
+                  <button className="apply-btn" onClick={handleApply}>
+                    🎓 Apply for Certificate
+                  </button>
+                </motion.div>
+              )}
+            </>
           )}
-        </motion.div>
+
+          <div className="btn-group">
+            <button
+              onClick={() => navigate(`/technology/${decoded}`)}
+              className="btn retake animated-btn"
+            >
+              🔁 Retake Quiz
+            </button>
+            <button
+              onClick={() => navigate("/technology ")}
+              className="btn back animated-btn"
+            >
+              🧠 Back to Technologies
+            </button>
+          </div>
+        </div>
       </motion.div>
 
-      {/* PROFESSIONAL CERTIFICATE POPUP */}
-      {showCertificate && (
-        <div className="certificate-overlay">
-          <motion.div
-            className="certificate-box zoomIn"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-          >
-            <div className="cert-logo">
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGbNxVLOK9qPXYd4Y9iY0KGnFC1u5WPsaidg&s"
-                alt="Academy Logo"
-              />
-            </div>
-            <h1 className="cert-header">🏆 Certificate of Achievement</h1>
-            <p className="cert-subtitle">Proudly Presented To</p>
-            <h2 className="cert-name">{studentName}</h2>
-            <p className="cert-roll">
-              Roll No: <strong>{rollNo}</strong>
+      {/* RIGHT SIDE - YOUTUBE VIDEO */}
+      <motion.div
+        className="right-panel"
+        initial={{ x: 50 }}
+        animate={{ x: 0 }}
+        transition={{ type: "spring", stiffness: 100 }}
+      >
+        {suggestion && videoId && (
+          <div className="video-card glass-effect">
+            <h3 className="video-title">
+              🔗 Recommended {suggestion.level} Video
+            </h3>
+            <iframe
+              src={`https://www.youtube.com/embed/${videoId}`}
+              title="YouTube Video"
+              frameBorder="0"
+              allowFullScreen
+              className="youtube-frame"
+            />
+            <a
+              href={suggestion.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="youtube-link"
+            >
+              📺 Watch on YouTube
+            </a>
+          </div>
+        )}
+      </motion.div>
+    </motion.div>
+
+    {/* PROFESSIONAL CERTIFICATE POPUP */}
+    {showCertificate && (
+      <div className="certificate-overlay">
+        <motion.div
+          className="certificate-box zoomIn"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+        >
+          <div className="cert-logo">
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGbNxVLOK9qPXYd4Y9iY0KGnFC1u5WPsaidg&s"
+              alt="Academy Logo"
+            />
+          </div>
+          <h1 className="cert-header">🏆 Certificate of Achievement</h1>
+          <p className="cert-subtitle">Proudly Presented To</p>
+          <h2 className="cert-name">{studentName}</h2>
+          <p className="cert-roll">
+            Roll No: <strong>{rollNo}</strong>
+          </p>
+          <div className="cert-content">
+            <p>
+              This certifies that <strong>{studentName}</strong> has
+              successfully completed the{" "}
+              <strong>{decoded} Technology Assessment</strong> with an
+              outstanding score of <strong>{score} / 40</strong>.
             </p>
-            <div className="cert-content">
-              <p>
-                This certifies that <strong>{studentName}</strong> has
-                successfully completed the{" "}
-                <strong>{decoded} Technology Assessment</strong> with an
-                outstanding score of <strong>{score} / 40</strong>.
-              </p>
-              <p>
-                Your <mark>dedication</mark>, <mark>hard work</mark>, and
-                <mark> exceptional performance</mark> demonstrate strong
-                proficiency in the fundamentals of {decoded}.
-              </p>
-              <p>
-                We <strong>congratulate</strong> you on this achievement and
-                wish you continued success in your learning journey.
-              </p>
-            </div>
-            <div className="cert-footer">
-              <span>
-                <strong>Issued by:</strong> Vaagai Tech Academy
-              </span>
-              <span>
-                <strong>Date:</strong> {currentDate}
-              </span>
-            </div>
-            <div className="cert-actions">
-              <button
-                onClick={() => {
-                  downloadCertificate();
-                  saveCertificateToAdmin(); // or saveCertificateToAdmin(["download"])
-                }}
-                className="cert-btn"
-              >
-                <FaDownload /> Download PDF
-              </button>
+            <p>
+              Your <mark>dedication</mark>, <mark>hard work</mark>, and
+              <mark> exceptional performance</mark> demonstrate strong
+              proficiency in the fundamentals of {decoded}.
+            </p>
+            <p>
+              We <strong>congratulate</strong> you on this achievement and
+              wish you continued success in your learning journey.
+            </p>
+          </div>
+          <div className="cert-footer">
+            <span>
+              <strong>Issued by:</strong> Vaagai Tech Academy
+            </span>
+            <span>
+              <strong>Date:</strong> {currentDate}
+            </span>
+          </div>
+          <div className="cert-actions">
+            <button
+              onClick={() => {
+                downloadCertificate();
+                saveCertificateToAdmin(); // or saveCertificateToAdmin(["download"])
+              }}
+              className="cert-btn"
+            >
+              <FaDownload /> Download PDF
+            </button>
 
-              <button
-                onClick={() => {
-                  shareWhatsApp();
-                  saveCertificateToAdmin(["whatsapp"]);
-                }}
-                className="cert-btn whatsapp"
-              >
-                <FaWhatsapp /> WhatsApp
-              </button>
+            <button
+              onClick={() => {
+                shareWhatsApp();
+                saveCertificateToAdmin(["whatsapp"]);
+              }}
+              className="cert-btn whatsapp"
+            >
+              <FaWhatsapp /> WhatsApp
+            </button>
 
-              <button
-                onClick={() => {
-                  shareEmail();
-                  saveCertificateToAdmin(["email"]);
-                }}
-                className="cert-btn email"
-              >
-                <FaEnvelope /> Email
-              </button>
+            <button
+              onClick={() => {
+                shareEmail();
+                saveCertificateToAdmin(["email"]);
+              }}
+              className="cert-btn email"
+            >
+              <FaEnvelope /> Email
+            </button>
 
-              <button
-                onClick={() => {
-                  setShowCertificate(false);
-                  saveCertificateToAdmin(["closed"]);
-                }}
-                className="cert-btn close"
-              >
-                <FaTimes /> Close
-              </button>
-            </div>
-          </motion.div>
-        </div>
-      )}
-    </div>
-  );
+            <button
+              onClick={() => {
+                setShowCertificate(false);
+                saveCertificateToAdmin(["closed"]);
+              }}
+              className="cert-btn close"
+            >
+              <FaTimes /> Close
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    )}
+  </div>
+);
 }

@@ -32,8 +32,8 @@ pool.connect().then(() => console.log("Connected to PostgreSQL"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-  origin: "http://localhost:3001", 
-  credentials: true                
+  origin: "http://localhost:3000",
+  credentials: true
 }));
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
@@ -84,7 +84,7 @@ app.post("/login", async (req, res) => {
     const token = jwt.sign(
       { id: user.user_id, username: user.username, email: user.email },
       JWT_SECRET,
-      { expiresIn: "2h" } // token valid for 1 hour
+      { expiresIn: "2h" }
     );
 
     res.json({ message: "Login successful", token });
@@ -98,10 +98,10 @@ function authMiddleware(req, res, next) {
   const authHeader = req.headers["authorization"];
   if (!authHeader) return res.status(401).json({ error: "No token provided" });
 
-  const token = authHeader.split(" ")[1]; 
+  const token = authHeader.split(" ")[1];
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; 
+    req.user = decoded;
     next();
   } catch (err) {
     return res.status(401).json({ error: "Invalid token" });
@@ -118,7 +118,8 @@ app.post("/api/update-score", authMiddleware, async (req, res) => {
     CSS: "css_score",
     JavaScript: "js_score",
     "React JS": "react_score",
-    FLUTTER: "flutter_score",
+    Flutter: "flutter_score",
+    Flutterapp: "flutter_score",
   };
   const column = techMap[tech];
   if (!column) return res.status(400).json({ error: "Invalid tech" });
@@ -129,16 +130,18 @@ app.post("/api/update-score", authMiddleware, async (req, res) => {
   res.json({ message: `${tech} score updated!`, user: result.rows[0] });
 });
 
-app.post("/api//certificates", authMiddleware, async (req, res) => {
+app.post("/api/certificates", authMiddleware, async (req, res) => {
   try {
-  const userId = req.user.id;
-  const { studentName, rollNo, technology, score, date, pdfUrl, sharedVia } =
-    req.body;
-    const result = await pool.query(
-      "INSERT INTO signup (user_id, student_name, roll_no, technology, score, date, pdf_url, shared_via) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-      [userId, studentName, rollNo, technology, score, date, pdfUrl, sharedVia]
+    const userId = req.user.id;
+    const { studentName, rollNo, technology, score, date, sharedVia } =
+      req.body;
+
+     const result = await pool.query(
+      "INSERT INTO certificate (user_id, student, rollno , technology, score, date,sharedvia) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+      [userId, studentName, rollNo, technology, score, date, sharedVia]
     );
     res.status(201).json(result.rows[0]);
+
 
   }
   catch (err) {
@@ -146,6 +149,6 @@ app.post("/api//certificates", authMiddleware, async (req, res) => {
     return res.status(500).json({ message: "Server error." });
   }
 }
-); 
+);
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
