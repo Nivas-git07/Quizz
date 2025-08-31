@@ -1750,7 +1750,7 @@ export default function Quiz() {
 const styles = {
   page: {
     minHeight: "100vh",
-    backgroundImage: "url('https://wallpaperaccess.com/full/1426929.jpg')", // Solid background (removed animation)
+    backgroundImage: "url('https://i.pinimg.com/originals/a1/10/4d/a1104d22b1c8fa11fc572487cc93f302.jpg')", // Solid background (removed animation)
     backgroundSize: "cover",
     backgroundPosition: "center",
     display: "flex",
