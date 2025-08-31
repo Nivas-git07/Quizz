@@ -117,7 +117,7 @@ app.post("/api/update-score", authMiddleware, async (req, res) => {
     HTML: "html_score",
     CSS: "css_score",
     JavaScript: "js_score",
-    React: "react_score",
+    "React JS": "react_score",
     FLUTTER: "flutter_score",
   };
   const column = techMap[tech];
@@ -128,5 +128,24 @@ app.post("/api/update-score", authMiddleware, async (req, res) => {
 
   res.json({ message: `${tech} score updated!`, user: result.rows[0] });
 });
+
+app.post("/api//certificates", authMiddleware, async (req, res) => {
+  try {
+  const userId = req.user.id;
+  const { studentName, rollNo, technology, score, date, pdfUrl, sharedVia } =
+    req.body;
+    const result = await pool.query(
+      "INSERT INTO signup (user_id, student_name, roll_no, technology, score, date, pdf_url, shared_via) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+      [userId, studentName, rollNo, technology, score, date, pdfUrl, sharedVia]
+    );
+    res.status(201).json(result.rows[0]);
+
+  }
+  catch (err) {
+    console.error("Create certificate error:", err);
+    return res.status(500).json({ message: "Server error." });
+  }
+}
+); 
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

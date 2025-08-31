@@ -7,6 +7,7 @@ const router = Router();
  * POST /api/certificates
  * Body: { studentName, rollNo, technology, score, date, pdfUrl?, sharedVia? }
  */
+
 router.post("/", async (req, res) => {
   try {
     const { studentName, rollNo, technology, score, date, pdfUrl, sharedVia } =
@@ -38,7 +39,22 @@ router.post("/", async (req, res) => {
     return res.status(500).json({ message: "Server error." });
   }
 });
+// 
+//   const formData = new FormData();
+//   formData.append("pdf", pdfFile); // pdfFile is from input[type=file]
 
+//   try {
+//     const res = await fetch("http://localhost:5000/api/certificates", {
+//       method: "POST",
+//       body: formData, // Don't set Content-Type manually
+//     });
+
+//     const data = await res.json();
+//     console.log("Upload success:", data);
+//   } catch (err) {
+//     console.error("Upload error:", err);
+//   }
+// };
 /**
  * GET /api/certificates
  * Query: page, limit, search

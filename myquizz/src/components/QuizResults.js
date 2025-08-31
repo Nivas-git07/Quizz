@@ -59,6 +59,7 @@ export default function QuizResult() {
   const API_BASE = "http://localhost:5000"; // update to your server origin in prod
 
   const saveCertificateToAdmin = async (sharedVia = []) => {
+    const token = localStorage.getItem("token"); 
     const certificateData = {
       studentName,
       rollNo,
@@ -73,6 +74,7 @@ export default function QuizResult() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(certificateData),
+        Authorization: `Bearer ${token}`,
       });
 
       if (!res.ok) throw new Error("Failed to save certificate");

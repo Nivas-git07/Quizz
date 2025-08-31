@@ -1645,7 +1645,7 @@ export default function Quiz() {
         console.log("Final Score:", finalScore);
         console.log("tech:", decoded);
 
-        // ✅ Navigate only after saving score
+      
         navigate(`/technology/${encodeURIComponent(decoded)}/result/${finalScore}`);
       }
 
