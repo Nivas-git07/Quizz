@@ -1575,6 +1575,9 @@ export default function Quiz() {
   const { techName } = useParams();
   const decoded = decodeURIComponent(techName);
   const navigate = useNavigate();
+  const [timeLeft, setTimeLeft] = useState(150); // Timer state
+  const [currentRound, setCurrentRound] = useState(1); // Round state
+  const [isFailed, setIsFailed] = useState(false);
 
   const [round, setRound] = useState(0);
   const [qIndex, setQIndex] = useState(0);
@@ -1596,6 +1599,34 @@ export default function Quiz() {
   }, [decoded, round]);
 
   const currQ = questions[qIndex];
+  useEffect(() => {
+    if (timeLeft === 0) {
+      setIsFailed(true); // Show fail message
+      alert("❌ Time's up! restart the quizz..");
+      setCurrentRound(1);      // Reset to round 1
+      setRound(0);             // Reset round index for questionBank
+      setQIndex(0);            // Reset question index
+      setScore(0);             // Reset score
+      setTimeLeft(150);        // Reset timer
+      setIsFailed(false);      // Remove fail message after reset
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer); // Stop previous timer
+  }, [timeLeft]);
+
+  const handleNextRound = () => {
+    if (currentRound < 4) {
+      setCurrentRound(currentRound + 1);
+      setTimeLeft(150); // reset timer for next round
+    } else {
+      alert("Quiz Completed!");
+    }
+  };
 
   // ✅ Toast after completing a round
   useEffect(() => {
@@ -1625,13 +1656,13 @@ export default function Quiz() {
       setRound((r) => r + 1);
       setQIndex(0);
     } else {
-     
+
       const finalScore = score + (correct ? 1 : 0);
       let token = localStorage.getItem("token"); // get JWT from localStorage
 
-      
+
       try {
-        
+
         const res = await fetch("https://quiz.selfmade.express/api/update-score", {
           method: "POST",
           headers: {
@@ -1642,7 +1673,7 @@ export default function Quiz() {
         });
         const data = await res.json();
 
-      
+
         navigate(`/technology/${encodeURIComponent(decoded)}/result/${finalScore}`);
       }
 
@@ -1728,20 +1759,22 @@ export default function Quiz() {
           <p style={styles.progressText}>
             Question {qIndex + 1} / {questions.length} | Score: {score}
           </p>
+          {isFailed ? (
+            <div style={styles.failMessage}>❌ Time's up! Quiz restarting...</div>
+          ) : (
+            <div style={styles.timer}>⏳ Time Left: {timeLeft}s</div>
+          )}
 
-          {/* ✅ Back Button */}
-          {round > 0 || qIndex > 0 ? (
-            <motion.button
-              style={styles.backBtn}
-              onClick={() => navigate(-1)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              ⬅ Back to Technology
-            </motion.button>
-          ) : null}
+
         </motion.div>
       </AnimatePresence>
+      {/* Back button outside the card but inside the page */}
+      <button
+        style={styles.backButton}
+        onClick={() => navigate("/technology")}
+      >
+        ← Back to Technology
+      </button>
     </div>
   );
 }
@@ -1846,5 +1879,19 @@ const styles = {
     marginTop: "12px",
     fontStyle: "italic",
   },
+  backButton: {
+  position: "fixed",
+  bottom: "20px",
+  left: "20px",
+  backgroundColor: "#000000", // Black color
+  color: "#fff",              // White text for contrast
+  border: "none",
+  padding: "10px 18px",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "bold",
+  boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+  transition: "all 0.3s ease",
+},
 }
 

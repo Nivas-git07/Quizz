@@ -100,15 +100,7 @@ const load = async () => {
             >
               Date
             </th>
-            <th
-              style={{
-                textAlign: "left",
-                borderBottom: "1px solid #ddd",
-                padding: 8,
-              }}
-            >
-              Shared Via
-            </th>
+            
           </tr>
         </thead>
         <tbody>
@@ -119,7 +111,6 @@ const load = async () => {
               <td style={{ padding: 8 }}>{c.technology}</td>
               <td style={{ padding: 8 }}>{c.score}</td>
               <td style={{ padding: 8 }}>{c.date}</td>
-              <td style={{ padding: 8 }}>{(c.sharedVia || []).join(", ")}</td>
             </tr>
           ))}
         </tbody>

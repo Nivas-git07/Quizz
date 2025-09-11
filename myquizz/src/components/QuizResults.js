@@ -288,15 +288,24 @@ export default function QuizResult() {
                 )}
               </>
             )}
-            <a
-              href="https://www.simplilearn.com/front-end-developer-free-course-skillup?utm_source=chatgpt.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="cert-btn external"
-              style={{ marginTop: "15px", display: "block", background: "#3b1b1bff", color: "#fff", padding: "10px 15px", borderRadius: "6px" }} z
-            >
-              📜 Get Verified Free Certificate
-            </a>
+            {numericScore >= 25 && (
+              <a
+                href="https://www.mygreatlearning.com/computer/free-courses"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cert-btn external"
+                style={{
+                  marginTop: "15px",
+                  display: "block",
+                  background: "#3b1b1bff",
+                  color: "#fff",
+                  padding: "10px 15px",
+                  borderRadius: "6px",
+                }}
+              >
+                📜 Get Verified Free Certificate
+              </a>
+            )}
 
             <div className="btn-group">
               <button

@@ -96,6 +96,12 @@ export default function TechnologyDetails() {
           </motion.button>
         </div>
       </motion.div>
+      <button
+        style={styles.backButton}
+        onClick={() => navigate("/technology")}
+      >
+        ← Back to Technology
+      </button>
     </div>
   );
 }
@@ -168,6 +174,20 @@ const styles = {
   notFound: {
     fontSize: "20px",
     color: "#FFD700",
+  },
+  backButton: {
+    position: "fixed",
+    bottom: "20px",
+    left: "20px",
+    backgroundColor: "#8B4513", // brown color (saddle brown)
+    color: "#fff",
+    border: "none",
+    padding: "12px 20px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+    transition: "background-color 0.3s ease",
   },
 };
 

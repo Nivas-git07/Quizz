@@ -28,12 +28,16 @@ export default function AdminPage() {
   };
 
   const cardStyle = {
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
-    borderRadius: "12px",
+    backgroundImage: "url('https://wallpapercave.com/wp/wp3416333.jpg')", // Solid background (removed animation)
+    backgroundSize: "cover",
+    backgroundPosition: "center",
     padding: "40px",
-    width: "400px",
-    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.3)",
+    borderRadius: "14px",
+    boxShadow: "0 0 15px rgba(255, 215, 0, 0.3)", // Softer glow effect
+    maxWidth: "400px",
+    width: "100%",
     textAlign: "center",
+    color: "#fff",
   };
 
   const logoStyle = {

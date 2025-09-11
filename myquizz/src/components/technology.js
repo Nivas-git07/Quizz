@@ -44,8 +44,8 @@ export default function Technology() {
 
   const filteredTech = searchTerm
     ? technologies.filter((tech) =>
-        tech.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      tech.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
     : technologies;
 
   const handleCardClick = (techName) => {
@@ -118,12 +118,18 @@ export default function Technology() {
           )}
         </AnimatePresence>
       </div>
+      <button
+        style={styles.backButton}
+        onClick={() => navigate("/login")}
+      >
+        ← Back
+      </button>
     </div>
   );
 }
 
 const styles = {
- page: {
+  page: {
     minHeight: "100vh",
     backgroundImage: "url('https://img.freepik.com/free-vector/wave-background-abstract-gradient-design_483537-3688.jpg')", // Solid background (removed animation)
     backgroundSize: "cover",
@@ -208,4 +214,20 @@ const styles = {
     fontSize: "16px",
     color: "#333",
   },
+  backButton: {
+    position: "fixed",
+    bottom: "20px",
+    left: "20px",
+    backgroundColor: "#1E3A8A", // dark blue background
+    color: "#fff",
+    border: "none",
+    padding: "12px 20px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+    display: "flex",
+  },
+
+
 };
