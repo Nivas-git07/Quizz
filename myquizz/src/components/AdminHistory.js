@@ -1,7 +1,7 @@
 // somewhere in AdminHistory.jsx
 import { useEffect, useState } from "react";
 
-const API_BASE = "https://quiz.selfmade.express";
+const API_BASE = "http://127.0.0.1:3000";
 
 export default function AdminHistory() {
   const [data, setData] = useState([]);
@@ -11,7 +11,7 @@ export default function AdminHistory() {
 const load = async () => {
   let token = localStorage.getItem("token");
   try {
-    const res = await fetch(`${API_BASE}/api/getdetails`, {
+    const res = await fetch(`${API_BASE}/getdetails`, {
       method: "GET", 
       headers: {
         "Content-Type": "application/json",

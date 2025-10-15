@@ -1663,7 +1663,7 @@ export default function Quiz() {
 
       try {
 
-        const res = await fetch("https://quiz.selfmade.express/api/update-score", {
+        const res = await fetch("http://127.0.0.1:3000/update-score", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
