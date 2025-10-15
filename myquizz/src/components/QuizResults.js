@@ -56,7 +56,7 @@ export default function QuizResult() {
       high: "https://www.youtube.com/watch?v=VCRIO0r64Xg",
     },
   };
-  const API_BASE = "http://127.0.0.1:5000"; // update to your server origin in prod
+  const API_BASE = "http://localhost:5000"; // update to your server origin in prod
 
   const saveCertificateToAdmin = async (sharedVia = []) => {
     const certificateData = {

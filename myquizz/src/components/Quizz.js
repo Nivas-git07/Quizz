@@ -1663,7 +1663,7 @@ export default function Quiz() {
 
       try {
 
-        const res = await fetch("http://127.0.0.1:5000/update-score", {
+        const res = await fetch("http://localhost:5000/update-score", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
