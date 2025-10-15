@@ -32,12 +32,12 @@ pool.connect().then(() => console.log("Connected to PostgreSQL"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const allowedOrigins = [  // React dev server
-  "http://127.0.0.1:3000"   // Production domain
-];
+// const allowedOrigins = [  // React dev server
+//      // Production domain
+// ];
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: '*',
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
